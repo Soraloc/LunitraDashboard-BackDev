@@ -1,10 +1,10 @@
 const express = require('express');
-const Model = require('../model/model');
+const Model = require('../model/users.model');
 
 const router = express.Router();
 
 //Post Method
-router.post('/post', async (req, res) => {
+router.post('/createUser', async (req, res) => {
     const data = new Model({
         name: req.body.name
     })
