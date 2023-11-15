@@ -1,22 +1,11 @@
 const express = require('express');
 const Model = require('../model/users.model');
+const UserController = require('../controller/users.controller');
 
 const router = express.Router();
 
 //Post Method
-router.post('/createUser', async (req, res) => {
-    const data = new Model({
-        name: req.body.name
-    })
-
-    try {
-        const dataToSave = await data.save();
-        res.status(200).json(dataToSave)
-    }
-    catch (error) {
-        res.status(400).json({message: error.message})
-    }
-})
+router.post('/createUser', UserController.createUser);
 
 //Get all Method
 router.get('/getAll', async (req, res) => {
