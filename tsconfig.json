@@ -1,9 +1,0 @@
-{
-    "extends": "@tsconfig/node20/tsconfig.json",
-    "compilerOptions": {
-      "allowJs": true,
-      "outDir": "dist"
-    },
-    "include": ["src/**/*", "index.ts"],
-    "exclude": ["node_modules"]
-  }
