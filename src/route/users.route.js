@@ -1,5 +1,5 @@
 const express = require('express');
-const Model = require('../model/users.model');
+//const Model = require('../model/users.model');
 const UserController = require('../controller/users.controller');
 
 const router = express.Router();
@@ -8,15 +8,7 @@ const router = express.Router();
 router.post('/createUser', UserController.createUser);
 
 //Get all Method
-router.get('/getAll', async (req, res) => {
-    try{
-        const data = await Model.find();
-        res.json(data)
-    }
-    catch(error){
-        res.status(500).json({message: error.message})
-    }
-})
+router.get('/getAll', UserController.getAllUsers);
 
 //Get by ID Method
 router.get('/getOne/:id', (req, res) => {
