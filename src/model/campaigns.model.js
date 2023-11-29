@@ -3,26 +3,17 @@ const mongoose = require('mongoose');
 const dataSchema = new mongoose.Schema({
     _id: 
         mongoose.Schema.Types.ObjectId,
-    username: {
+    name: {
         required: true,
         type: String
     },
-    email: {
+    image: {
         required: true,
         type: String
     },
-    password: {
-        required: true,
-        type: String
-    },
-    role: {
-        required: true,
-        type: String
-    },
-    campaigns: [{
+    locations: [{
         required: false,
-        type: [mongoose.Schema.Types.ObjectId], 
-        ref: 'Campaigns'
+        type: String, 
     }],
     characters: [{
         required: false,
@@ -31,4 +22,4 @@ const dataSchema = new mongoose.Schema({
     }],
 })
 
-module.exports = mongoose.model('Users', dataSchema)
+module.exports = mongoose.model('Campaigns', dataSchema)
