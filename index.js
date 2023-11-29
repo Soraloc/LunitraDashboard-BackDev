@@ -1,11 +1,13 @@
 const express = require('express');
 const db = require('./dbconfig');
 const users_route = require('./src/route/users.route');
+const campaigns_route = require('./src/route/campaigns.route');
 
 const app = express();
 
 app.use(express.json());
 app.use('/users', users_route);
+app.use('/campaigns', campaigns_route);
 
 // setting port
 app.listen(3000, () => {
