@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 
 const dataSchema = new mongoose.Schema({
-    _id: 
-        mongoose.Schema.Types.ObjectId,
+    // _id: 
+    //     mongoose.Schema.Types.ObjectId,
     username: {
         required: true,
         type: String
@@ -29,6 +29,6 @@ const dataSchema = new mongoose.Schema({
         type: [mongoose.Schema.Types.ObjectId], 
         ref: 'Characters'
     }],
-})
+},{ versionKey: false })
 
 module.exports = mongoose.model('Users', dataSchema)

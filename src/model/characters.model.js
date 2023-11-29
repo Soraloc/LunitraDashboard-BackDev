@@ -1,14 +1,14 @@
 const mongoose = require('mongoose');
 
 const dataSchema = new mongoose.Schema({
-    _id: 
-        mongoose.Schema.Types.ObjectId,
-    last_name: {
+    // _id: 
+    //     mongoose.Schema.Types.ObjectId,
+    first_name: {
         required: true,
         type: String
     },
-    first_name: {
-        required: true,
+    last_name: {
+        required: false,
         type: String
     },
     age: {
@@ -19,6 +19,16 @@ const dataSchema = new mongoose.Schema({
         required: false,
         type: String
     },
-})
+    creator: {
+        required: true,
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'Users'
+    },
+    campaigns: [{
+        required: false,
+        type: [mongoose.Schema.Types.ObjectId], 
+        ref: 'Campaigns'
+    }],
+},{ versionKey: false })
 
 module.exports = mongoose.model('Characters', dataSchema)
