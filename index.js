@@ -3,6 +3,7 @@ const db = require('./dbconfig');
 const users_route = require('./src/route/users.route');
 const campaigns_route = require('./src/route/campaigns.route');
 const characters_route = require('./src/route/characters.route');
+const authentication_route = require('./src/route/authentication.route');
 
 const app = express();
 
@@ -10,6 +11,7 @@ app.use(express.json());
 app.use('/users', users_route);
 app.use('/campaigns', campaigns_route);
 app.use('/characters', characters_route);
+app.use('/auth', authentication_route);
 
 // setting port
 app.listen(3000, () => {

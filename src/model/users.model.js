@@ -1,8 +1,6 @@
 const mongoose = require('mongoose');
 
 const dataSchema = new mongoose.Schema({
-    // _id: 
-    //     mongoose.Schema.Types.ObjectId,
     username: {
         required: true,
         type: String
@@ -21,12 +19,12 @@ const dataSchema = new mongoose.Schema({
     },
     campaigns: [{
         required: false,
-        type: [mongoose.Schema.Types.ObjectId], 
+        type: mongoose.Schema.Types.ObjectId, 
         ref: 'Campaigns'
     }],
     characters: [{
         required: false,
-        type: [mongoose.Schema.Types.ObjectId], 
+        type: mongoose.Schema.Types.ObjectId, 
         ref: 'Characters'
     }],
 },{ versionKey: false })

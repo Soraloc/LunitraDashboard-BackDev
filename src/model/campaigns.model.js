@@ -1,8 +1,6 @@
 const mongoose = require('mongoose');
 
 const dataSchema = new mongoose.Schema({
-    // _id: 
-    //     mongoose.Schema.Types.ObjectId,
     name: {
         required: true,
         type: String
@@ -13,7 +11,7 @@ const dataSchema = new mongoose.Schema({
     },
     locations: [{
         required: false,
-        type: String, 
+        type: String
     }],
     characters: [{
         required: false,

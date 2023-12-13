@@ -1,5 +1,4 @@
 const express = require('express');
-//const Model = require('../model/users.model');
 const CampaignController = require('../controller/campaigns.controller');
 
 const router = express.Router();
