@@ -4,25 +4,16 @@ const UserController = require('../controller/users.controller');
 
 const router = express.Router();
 
-//Post Method
+// Sign in
 router.post('/createUser', UserController.createUser);
 
-//Get all Method
+// Get all users
 router.get('/getAll', UserController.getAllUsers);
 
-//Get by ID Method
-router.get('/getOne/:id', (req, res) => {
-    res.send('Get by ID API');
-})
+// Get user by id
 
-//Update by ID Method
-router.patch('/update/:id', (req, res) => {
-    res.send('Update by ID API');
-})
+// Update user
 
-//Delete by ID Method
-router.delete('/delete/:id', (req, res) => {
-    res.send('Delete by ID API');
-})
+// Delete user
 
 module.exports = router;
