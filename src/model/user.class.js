@@ -7,7 +7,7 @@ class User {
         this.username = username;
         this.email = email;
         this.password = password;
-        this.verification = verification;
+        this.verified = verified;
     }
 
     //est-ce que je dois faire des méthodes pour ajouter les campagnes et les personnages à l'utilisateur ?

@@ -1,9 +1,10 @@
 const UserModel = require('../model/users.model');
 const Token = require('../utils/token');
-const bcrypt  = require("bcrypt");
+const bcrypt = require("bcrypt");
+const nodemailer = require("nodemailer");
 
 // est-ce que je met l'inscription ici ou dans users ?
-exports.loginUser = async (req, res) => {
+async function loginUser (req, res) {
   try {
     const { email, password } = req.body;
     //crypter et décrypter le password pour le comparer à la base
@@ -37,12 +38,15 @@ exports.loginUser = async (req, res) => {
 }
 
 // Inscription de l'utilisateur
-exports.registerUser = async (req, res) => {
+async function registerUser (req, res) {
   try {
     const { username, email, password } = req.body;
-    const regexEmail = new RegExp("^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$");
-    const regexPwd = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$");
+    console.log(req.body);
+    const regexEmail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
+    console.log(regexEmail);
+    const regexPwd = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/g;
 
+    // Vérification de l'email avec la regex
     if (email.match(regexEmail) == null) {
       res.status(400).json({
         sucess: false,
@@ -50,6 +54,7 @@ exports.registerUser = async (req, res) => {
       });
     }
 
+    // Vérification du mot de passe avec la regex
     if (password.match(regexPwd) == null) {
       res.status(400).json({
         success: false,
@@ -64,9 +69,41 @@ exports.registerUser = async (req, res) => {
         UserModel.createUser(username, email, password);
       })
     });
-  
+
+    /*
+    const transporter = nodemailer.createTransport({
+      host: ,
+      port: ,
+      secure: ,
+      auth: {
+        user: ,
+        pass: ,
+      },
+    });
+    
+
+    // Mail de vérification envoyé au user après inscription
+    const verifMail = await transporter.sendMail({
+      from: '"Bloubloup" <bloup@gmail.com>',
+      to: email,
+      subject: "Blip",
+      text: "Bloup bloup blip?",
+      html: "<b>Bloup bloup blip?</b>"
+    });
+    */
   }
   catch(error) {
     res.status(500).json({ message: error.message })
   }
+}
+
+// Vérification de l'utilisateur
+async function verificationUser (req, res) {
+  
+}
+
+module.exports = {
+  loginUser,
+  registerUser,
+  verificationUser
 }

@@ -15,9 +15,20 @@ const dataSchema = new mongoose.Schema({
         required: true,
         type: String
     },
-    verification: [{
-        required: false,
-        type: Boolean
+    role: [{
+        required: true,
+        type: Boolean,
+        default: "Member"
+    }],
+    verified: [{
+        required: true,
+        type: Boolean,
+        default: false
+    }],
+    creationDate: [{
+        required: true,
+        type: Date,
+        default: Date.now
     }],
     campaigns: [{
         required: false,
@@ -39,7 +50,6 @@ exports.createUser = async(usernameValue, emailValue, passwordValue) => {
             {username: usernameValue},
             {email: emailValue},
             {password: passwordValue},
-            {verification: false}
         );
         savedUser = await user.save();
         res.status(200).json(savedUser);
