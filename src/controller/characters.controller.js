@@ -1,8 +1,8 @@
 const CharacterModel = require('../model/characters.model');
 
-//pour la création d'un personnage il faut récupérer l'id de l'utilisateur en ligne
-//donc celui qui le créer
-//il sera sûrement stocké dans le token
+// Pour la création d'un personnage il faut récupérer l'id de l'utilisateur en ligne
+// donc celui qui le créer
+// il sera sûrement stocké dans le token
 exports.createCharacter = async (req, res) => {
   try {
     const character = new CharacterModel(req.body);

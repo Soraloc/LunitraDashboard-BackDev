@@ -44,6 +44,7 @@ const dataSchema = new mongoose.Schema({
 
 module.exports = mongoose.model('Users', dataSchema)
 
+/*
 exports.createUser = async(usernameValue, emailValue, passwordValue) => {
     try {
         const user = new UserModel(
@@ -57,4 +58,15 @@ exports.createUser = async(usernameValue, emailValue, passwordValue) => {
     catch(error) {
         res.status(400).json({ error: error.message });
     }
+*/
+
+// Create a new user when sign in
+async function createUser(req) {
+  const user = new User(req);
+  const savedUser = await user.save();
+  return savedUser;
 }
+
+module.exports = {
+  createUser
+};

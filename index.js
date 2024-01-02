@@ -15,13 +15,13 @@ app.use('/auth', authentication_route);
 
 // setting port
 app.listen(3000, () => {
-    console.log(`Server Started at ${3000}`)
+  console.log(`Server Started at ${3000}`)
 })
 
 // test connexion base de données
 db.on('error', (error) => {
-    console.log(error)
+  console.log(error)
 })
 db.once('connected', () => {
-    console.log('Database Connected');
+  console.log('Database Connected');
 })

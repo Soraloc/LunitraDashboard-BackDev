@@ -7,7 +7,7 @@ const nodemailer = require("nodemailer");
 async function loginUser (req, res) {
   try {
     const { email, password } = req.body;
-    //crypter et décrypter le password pour le comparer à la base
+    // Crypter et décrypter le password pour le comparer à la base
     const user = await UserModel.find({email: email, password: password});
   
     if (!user.length) {
@@ -17,12 +17,12 @@ async function loginUser (req, res) {
       });
     }
   
-		//est-ce que je fais des classes pour créer des objets ?
+		// Est-ce que je fais des classes pour créer des objets ?
     delete user.password;
   
     const token = Token.generateToken(user);
   
-    //l'envoie de token dans les cookies ne fonctionne pas
+    // L'envoie de token dans les cookies ne fonctionne pas
     Token.setTokenCookie(res, token);
 
     res.status(200).json({

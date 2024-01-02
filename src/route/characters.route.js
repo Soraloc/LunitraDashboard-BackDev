@@ -3,13 +3,15 @@ const CharacterController = require('../controller/characters.controller');
 
 const router = express.Router();
 
-//Post Method
+// Create character
 router.post('/createCharacter', CharacterController.createCharacter);
 
-//Get all Method
+// Get all characters
 router.get('/getAll', CharacterController.getAllCharacters);
 
-//get character by user
+// Get character by user
 router.get('/getByUser/:id', CharacterController.getCharacterByUser);
+
+// Get character by id
 
 module.exports = router;
