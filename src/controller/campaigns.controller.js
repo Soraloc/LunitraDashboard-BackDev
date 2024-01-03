@@ -1,23 +1,34 @@
 const CampaignModel = require('../model/campaigns.model');
-const CampaignClass = require('../class/campaign.class');
 
-exports.createCampaign = async (req, res) => {
+async function createCampaign(req, res) {
   try {
+    console.log(req.body);
     campaign = await CampaignModel.createCampaign(req.body);
-    //créer l'objet campagne
-    campaignObject = new CampaignClass(campaign._id, campaign.name, campaign.creator, campaign.game_master, campaign.created_at, campaign.image, campaign.locations);
-    res.status(200).json(campaign);
+    res.status(200).json({
+      status: true,
+      message: "Campaign created",
+      campaign: campaign
+    });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 }
 
-exports.getAllCampaigns = async (req, res) => {
+async function getAllCampaigns(req, res) {
   try {
-    const data = await CampaignModel.find();
-    res.json(data)
+    const campaigns = await CampaignModel.getAllCampaigns();
+    res.status(200).json({
+      status: true,
+      message: "All campaigns",
+      campaigns: campaigns
+    });
   }
   catch(error) {
     res.status(500).json({ message: error.message })
   }
+}
+
+module.exports = {
+  createCampaign,
+  getAllCampaigns
 }

@@ -9,4 +9,34 @@ class Character {
     this.gender = gender;
     this.creator = creator;
   }
+
+  getId() {
+    return this.id;
+  }
+
+  getFirstName() {
+    return this.first_name;
+  }
+
+  getLastName() {
+    return this.last_name;
+  }
+
+  getAge() {
+    return this.age;
+  }
+
+  getGender() {
+    return this.gender;
+  }
+
+  getCreator() {
+    return this.creator;
+  }
+
+  addCampaign(campaign) {
+    this.campaigns.push(campaign);
+  }
 }
+
+module.exports = Character;
