@@ -60,13 +60,15 @@ async function registerUser (req, res) {
       });
     }
 
-    const emailExist = await UserModel.getUserByEmail(usersAttributes.email);
-    if(emailExist.length) {
+    /* const userDatabase = await UserModel.getUserByEmail(usersAttributes.email);
+    console.log(userDatabase);
+    const emailExist = userDatabase.getEmail();
+    if(emailExist) {
       res.status(400).json({
         success: false,
         message: 'Email already exists'
       });
-    }
+    } */
 
     // Hachage du mot de passe (bloup bloup)
     const saltRounds = 10;

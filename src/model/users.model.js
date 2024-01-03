@@ -53,14 +53,22 @@ async function createUser(req) {
   return userObject;
 }
 
+// Get all users
 async function getAllUsers() {
 	const users = await User.find();
-	return users;
+	const usersObject = users.map((user) => new UserObject(user));
+	return usersObject;
 }
 
+// Get email by email
 async function getUserByEmail(email) {
-	const user = await User.find({ email: email }, 'email');
-	return user;
+	const user = await User.find({ email: email });
+	if(!user) {
+		return null;
+	} else {
+		const userObject = new UserObject(user);
+		return userObject;
+	}
 }
 
 module.exports = {
