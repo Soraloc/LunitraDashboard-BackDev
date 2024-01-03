@@ -1,5 +1,5 @@
 const express = require('express');
-const db = require('./dbconfig');
+const db = require('./config/dbconfig');
 const users_route = require('./src/route/users.route');
 const campaigns_route = require('./src/route/campaigns.route');
 const characters_route = require('./src/route/characters.route');
