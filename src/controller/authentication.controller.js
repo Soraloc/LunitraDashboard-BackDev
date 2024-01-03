@@ -42,7 +42,6 @@ async function loginUser (req, res) {
 // Inscription de l'utilisateur
 async function registerUser (req, res) {
   try {
-    console.log(req.body);
     const usersAttributes = req.body;
     const regexEmail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
     const regexPwd = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/g;
@@ -63,10 +62,20 @@ async function registerUser (req, res) {
       });
     }
 
+    /* const userDatabase = await UserModel.getUserByEmail(usersAttributes.email);
+    console.log(userDatabase);
+    const emailExist = userDatabase.getEmail();
+    if(emailExist) {
+      res.status(400).json({
+        success: false,
+        message: 'Email already exists'
+      });
+    } */
+
     // Hachage du mot de passe (bloup bloup)
     const saltRounds = 10;
     usersAttributes.password = await bcrypt.hash(usersAttributes.password, saltRounds);
-    savedUser = UserModel.createUser(usersAttributes);
+    user = await UserModel.createUser(usersAttributes);
 
     const transporter = nodemailer.createTransport({
       host: "smtp-relay.brevo.com",
@@ -86,10 +95,10 @@ async function registerUser (req, res) {
       text: "Bloup bloup blip?",
       html: "<b>Bloup bloup blip?</b>"
     });
-
     res.status(200).json({
       success: true,
-      message: 'User created'
+      message: 'User created',
+      user: user
     });
   }
   catch(error) {

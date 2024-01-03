@@ -2,14 +2,14 @@ class User {
   campaigns = [];
   characters = [];
 
-  constructor(id, username, email, password, role, created_at, validated) {
+  constructor(id, username, email, password, role, verified, creationDate) {
     this.id = id;
     this.username = username;
     this.email = email;
     this.password = password;
 		this.role = role;
-		this.created_at = created_at;
-		this.validated = validated;
+		this.verified = verified;
+		this.creationDate = creationDate;
   }
 
 	getId() {
@@ -28,12 +28,12 @@ class User {
 		return this.password;
 	}
 
-	getCreatedAt() {
-		return this.created_at;
+	getVerified() {
+		return this.verified;
 	}
 
-	getValidated() {
-		return this.validated;
+	getCreationDate() {
+		return this.creationDate;
 	}
 
 	addCampaign(campaign) {
