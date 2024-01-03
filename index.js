@@ -4,8 +4,13 @@ const users_route = require('./src/route/users.route');
 const campaigns_route = require('./src/route/campaigns.route');
 const characters_route = require('./src/route/characters.route');
 const authentication_route = require('./src/route/authentication.route');
+const bodyParser = require('body-parser');
 
 const app = express();
+
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
 
 app.use(express.json());
 app.use('/users', users_route);

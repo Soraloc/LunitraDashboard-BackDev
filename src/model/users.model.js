@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const UserObject = require('../class/user.class');
 
 const dataSchema = new mongoose.Schema({
     username: {
@@ -42,13 +43,14 @@ const dataSchema = new mongoose.Schema({
     }],
 },{ versionKey: false })
 
-const User = mongoose.model('Users', dataSchema)
+const User = mongoose.model('Users', dataSchema);
 
 // Create a new user when sign in
 async function createUser(req) {
   const user = new User(req);
   const savedUser = await user.save();
-  return savedUser;
+  const userObject = new UserObject(savedUser);
+  return userObject;
 }
 
 module.exports = {

@@ -64,7 +64,7 @@ async function registerUser (req, res) {
     // Hachage du mot de passe (bloup bloup)
     const saltRounds = 10;
     usersAttributes.password = await bcrypt.hash(usersAttributes.password, saltRounds);
-    savedUser = UserModel.createUser(usersAttributes);
+    user = await UserModel.createUser(usersAttributes);
 
     /*
     const transporter = nodemailer.createTransport({
@@ -86,10 +86,11 @@ async function registerUser (req, res) {
       html: "<b>Bloup bloup blip?</b>"
     });
     */
-   res.status(200).json({
-    success: true,
-    message: 'User created'
-   });
+    res.status(200).json({
+      success: true,
+      message: 'User created',
+      user: user
+    });
   }
   catch(error) {
     res.status(500).json({ message: error.message })
