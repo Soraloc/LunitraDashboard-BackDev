@@ -3,13 +3,13 @@ class User {
   characters = [];
 
   constructor(id, username, email, password, role, verified, creationDate) {
-    this.id = id;
-    this.username = username;
-    this.email = email;
-    this.password = password;
-		this.role = role;
-		this.verified = verified;
-		this.creationDate = creationDate;
+  this.id = id;
+  this.username = username;
+  this.email = email;
+  this.password = password;
+	this.role = role;
+	this.verified = verified;
+	this.creationDate = creationDate;
   }
 
 	getId() {
