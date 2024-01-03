@@ -63,11 +63,8 @@ async function registerUser (req, res) {
 
     // Hachage du mot de passe (bloup bloup)
     const saltRounds = 10;
-    bcrypt.genSalt(saltRounds, function(err, salt) {
-      bcrypt.hash(usersAttributes.password, salt, function(err, salt) {
-        savedUser = UserModel.createUser(req.body);
-      })
-    });
+    usersAttributes.password = await bcrypt.hash(usersAttributes.password, saltRounds);
+    savedUser = UserModel.createUser(usersAttributes);
 
     /*
     const transporter = nodemailer.createTransport({
