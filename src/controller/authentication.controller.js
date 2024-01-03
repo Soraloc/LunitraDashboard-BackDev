@@ -3,6 +3,8 @@ const Token = require('../utils/token');
 const bcrypt = require("bcrypt");
 const nodemailer = require("nodemailer");
 
+require('dotenv').config();
+
 // est-ce que je met l'inscription ici ou dans users ?
 async function loginUser (req, res) {
   try {
@@ -66,30 +68,29 @@ async function registerUser (req, res) {
     usersAttributes.password = await bcrypt.hash(usersAttributes.password, saltRounds);
     savedUser = UserModel.createUser(usersAttributes);
 
-    /*
     const transporter = nodemailer.createTransport({
-      host: ,
-      port: ,
-      secure: ,
+      host: "smtp-relay.brevo.com",
+      port: 587,
+      secure: false,
       auth: {
-        user: ,
-        pass: ,
+        user: process.env.BREVO_ID,
+        pass: process.env.BREVO_PWD,
       },
     });
     
     // Mail de vérification envoyé au user après inscription
     const verifMail = await transporter.sendMail({
-      from: '"Bloubloup" <bloup@gmail.com>',
-      to: email,
+      from: '"Nicolas PREAUX" <nicolas.preaux83@gmail.com>',
+      to: "garambois.lucas@gmail.com",
       subject: "Blip",
       text: "Bloup bloup blip?",
       html: "<b>Bloup bloup blip?</b>"
     });
-    */
-   res.status(200).json({
-    success: true,
-    message: 'User created'
-   });
+
+    res.status(200).json({
+      success: true,
+      message: 'User created'
+    });
   }
   catch(error) {
     res.status(500).json({ message: error.message })
