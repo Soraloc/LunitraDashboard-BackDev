@@ -4,9 +4,6 @@ const UserController = require('../controller/users.controller');
 
 const router = express.Router();
 
-// Sign in
-router.post('/createUser', UserController.createUser);
-
 // Get all users
 router.get('/getAll', UserController.getAllUsers);
 

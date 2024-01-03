@@ -53,6 +53,18 @@ async function createUser(req) {
   return userObject;
 }
 
+async function getAllUsers() {
+	const users = await User.find();
+	return users;
+}
+
+async function getUserByEmail(email) {
+	const user = await User.find({ email: email }, 'email');
+	return user;
+}
+
 module.exports = {
-  createUser
+  createUser,
+	getAllUsers,
+	getUserByEmail
 };

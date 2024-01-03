@@ -40,7 +40,6 @@ async function loginUser (req, res) {
 // Inscription de l'utilisateur
 async function registerUser (req, res) {
   try {
-    console.log(req.body);
     const usersAttributes = req.body;
     const regexEmail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
     const regexPwd = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/g;
@@ -58,6 +57,14 @@ async function registerUser (req, res) {
       res.status(400).json({
         success: false,
         message: 'Password is not valid. Please verify that the password contains at least 8 characters with:\n- 1 lowercase character [a-z]\n- 1 uppercase character [A-Z]\n- 1 number [0-9]\n- 1 special character [@$!%*?&]'
+      });
+    }
+
+    const emailExist = await UserModel.getUserByEmail(usersAttributes.email);
+    if(emailExist.length) {
+      res.status(400).json({
+        success: false,
+        message: 'Email already exists'
       });
     }
 
