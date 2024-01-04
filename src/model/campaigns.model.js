@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const CampaignObject = require('../class/campaign.class');
 
 const dataSchema = new mongoose.Schema({
   name: {
@@ -37,12 +38,20 @@ const dataSchema = new mongoose.Schema({
 
 const Campaign = mongoose.model('Campaigns', dataSchema);
 
-async function createCampaign(body) {
-  const campaign = new Campaign(body);
+async function createCampaign(req) {
+  const campaign = new Campaign(req);
   const savedCampaign = await campaign.save();
-  return savedCampaign;
+  const campaignObject = new CampaignObject(savedCampaign._id, savedCampaign.name, savedCampaign.creator, savedCampaign.game_master, savedCampaign.created_at, savedCampaign.image);
+  return campaignObject;
+}
+
+async function getAllCampaigns() {
+  const campaigns = await Campaign.find();
+  const campaignsObject = campaigns.map((campaign) => new CampaignObject(campaign._id, campaign.name, campaign.creator, campaign.game_master, campaign.created_at, campaign.image));
+  return campaignsObject;
 }
 
 module.exports = {
-  createCampaign
-};
+  createCampaign,
+  getAllCampaigns
+}

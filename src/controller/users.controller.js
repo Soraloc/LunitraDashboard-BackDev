@@ -3,11 +3,11 @@ const UserModel = require('../model/users.model');
 // Get all users
 async function getAllUsers(req, res) {
   try {
-    const data = await UserModel.getAllUsers();
+    const users = await UserModel.getAllUsers();
     res.status(200).json({
       success: true,
       message: 'All users',
-      data,
+      users: users
     });
   }
   catch(error) {
