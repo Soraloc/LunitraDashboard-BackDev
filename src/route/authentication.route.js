@@ -9,4 +9,7 @@ router.post('/login', AuthenticationController.loginUser);
 // Register
 router.post('/register', AuthenticationController.registerUser);
 
+// Verify
+router.post('/verify', AuthenticationController.verifyUser);
+
 module.exports = router;

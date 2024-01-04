@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const UserObject = require('../class/user.class');
+const Token = require('../utils/token');
 
 const dataSchema = new mongoose.Schema({
     username: {
@@ -21,15 +22,19 @@ const dataSchema = new mongoose.Schema({
         type: String,
         default: "Member"
     },
+    creationDate: {
+        required: true,
+        type: Date,
+        default: Date.now
+    },
     verified: {
         required: true,
         type: Boolean,
         default: false
     },
-    creationDate: {
-        required: true,
-        type: Date,
-        default: Date.now
+    verifyToken: {
+        required: false,
+        type: String
     },
     campaigns: [{
         required: false,
@@ -48,6 +53,9 @@ const User = mongoose.model('Users', dataSchema);
 // Create a new user when sign in
 async function createUser(req) {
   const user = new User(req);
+  const tokenType = "VERIFY";
+  const verifyToken = Token.generateToken(user, tokenType)
+  user.verifyToken = verifyToken;
   const savedUser = await user.save();
   const userObject = new UserObject(savedUser);
   return userObject;
@@ -74,5 +82,5 @@ async function getUserByEmail(email) {
 module.exports = {
   createUser,
 	getAllUsers,
-	getUserByEmail
+	getUserByEmail,
 };

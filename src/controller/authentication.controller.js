@@ -1,8 +1,7 @@
 const UserModel = require('../model/users.model');
 const Token = require('../utils/token');
 const bcrypt = require("bcrypt");
-const nodemailer = require("nodemailer");
-const transporter = require('../config/transporterconfig');
+const transporter = require('../../config/transporterconfig');
 
 // est-ce que je met l'inscription ici ou dans users ?
 async function loginUser (req, res) {
@@ -88,26 +87,33 @@ async function registerUser (req, res) {
       user: user
     });
 
-    verificationUser(res);
+    await verificationMail(user);
   }
   catch(error) {
     res.status(500).json({ message: error.message })
   }
 }
 
+async function verifyUser (req, res) {
+  
+}
+
 // Vérification de l'utilisateur
-async function verificationUser (res) {
-  const verifMail = await transporter.sendMail({
+async function verificationMail (user) {
+  /*
+  const mailOptions = {
     from: '"Nicolas PREAUX" <nicolas.preaux83@gmail.com>',
     to: "garambois.lucas@gmail.com",
     subject: "Blip",
     text: "Bloup bloup blip?",
     html: "<b>Bloup bloup blip?</b>"
-  });
+  };
+  await transporter.sendMail(mailOptions);
+  */
 }
 
 module.exports = {
   loginUser,
   registerUser,
-  verificationUser
+  verifyUser
 }

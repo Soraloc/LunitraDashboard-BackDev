@@ -2,12 +2,15 @@
 const jwt = require('jsonwebtoken');
 
 //génère un token à la connection de l'utilisateur
-function generateToken(user) {
+function generateToken(user, type) {
   const { _id, username, email, role } = user;
   const payload = { _id, username, email, role };
-  const accessToken = jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: '1h' });
-
-  return accessToken;
+  switch(type) {
+    case "SESSION":
+      return jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: '1h' });
+    case "VERIFY":
+      return jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: '1d' });
+  }
 }
 
 //function to authenticate JWT
