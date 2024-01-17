@@ -34,6 +34,7 @@ const dataSchema = new mongoose.Schema({
     },
     verifyToken: {
         required: false,
+				unique: true,
         type: String
     },
     campaigns: [{
@@ -79,8 +80,28 @@ async function getUserByEmail(email) {
 	}
 }
 
+async function getUserByVerifyToken(verifyToken) {
+	const user = await User.find({ verifyToken: verifyToken });
+	if(!user) {
+		return null;
+	} else {
+		const userObject = new UserObject(user);
+		return userObject;
+	}
+}
+
+async function deleteVerifyToken(user) {
+	user.verifyToken = null;
+	user.verified = true;
+	const savedUser = await user.save();
+	const userObject = new UserObject(savedUser);
+	return userObject;
+}
+
 module.exports = {
   createUser,
 	getAllUsers,
 	getUserByEmail,
+	getUserByVerifyToken,
+	deleteVerifyToken
 };

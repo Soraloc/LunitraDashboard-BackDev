@@ -94,22 +94,43 @@ async function registerUser (req, res) {
   }
 }
 
+// Vérification de l'utilisateur
 async function verifyUser (req, res) {
-  
+  const verifyToken = req.query.token; 
+  if (!verifyToken) {
+    res.status(400).json({
+      success: false,
+      message: 'Missing verify token'
+    });
+  }
+  else {
+    user = await UserModel.getUserByVerifyToken(verifyToken);
+    if (!user) {
+      res.status(400).json({
+        success: false,
+        message: 'Invalid verify token'
+      });
+    }
+    else {
+      user = await UserModel.deleteVerifyToken(user);
+      res.status(200).json({
+        success: true,
+        message: 'User verified',
+        user: user
+      });
+    }
+  }
 }
 
 // Vérification de l'utilisateur
 async function verificationMail (user) {
-  /*
   const mailOptions = {
     from: '"Nicolas PREAUX" <nicolas.preaux83@gmail.com>',
     to: "garambois.lucas@gmail.com",
     subject: "Blip",
-    text: "Bloup bloup blip?",
-    html: "<b>Bloup bloup blip?</b>"
+    text: "http://localhost:3000/auth/verify?token=" + user.verifyToken,
   };
   await transporter.sendMail(mailOptions);
-  */
 }
 
 module.exports = {
