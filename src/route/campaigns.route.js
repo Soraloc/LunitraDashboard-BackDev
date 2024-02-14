@@ -10,8 +10,10 @@ router.post('/createCampaign', CampaignController.createCampaign);
 router.get('/getAll', CampaignController.getAllCampaigns);
 
 // Get campaign by id user
+router.get('/getByUser/:id', CampaignController.getCampaignByUser);
 
 // Get campaign by id campaign
+router.get('/getCampaign/:id', CampaignController.getCampaignById);
 
 // Update campaign
 

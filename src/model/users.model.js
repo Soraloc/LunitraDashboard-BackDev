@@ -68,7 +68,7 @@ async function getAllUsers() {
 	return usersObject;
 }
 
-// Get email by email
+// Get user by email
 async function getUserByEmail(email) {
 	const user = await User.find({ email: email });
 	if(!user) {
@@ -79,8 +79,20 @@ async function getUserByEmail(email) {
 	}
 }
 
+// Get user by id
+async function getUserById(id) {
+    const user = await User.findById(id);
+    if(!user) {
+        return null;
+    } else {
+        const userObject = new UserObject(user);
+        return userObject;
+    }
+}
+
 module.exports = {
   createUser,
 	getAllUsers,
 	getUserByEmail,
+    getUserById
 };
