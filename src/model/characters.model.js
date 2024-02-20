@@ -54,8 +54,16 @@ async function getCharacterByUser(id) {
   return charactersObject;
 }
 
+// Get character by id
+async function getCharacterById(id) {
+  const characters = await Character.findById(id);
+  const characterObject = characters.map((character) => new CharacterObject(character._id, character.first_name, character.last_name, character.age, character.gender, character.creator));
+  return characterObject;
+}
+
 module.exports = {
   createCharacter,
   getAllCharacters,
-  getCharacterByUser
+  getCharacterByUser,
+  getCharacterById
 }

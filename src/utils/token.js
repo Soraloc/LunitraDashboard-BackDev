@@ -1,10 +1,10 @@
-//fichier pour les tokens
+// Module de génération et vérification de token JWT
 const jwt = require('jsonwebtoken');
 
-//génère un token à la connection de l'utilisateur
+// Fonction de génération de token
 function generateToken(user, type) {
   const { _id, username, email, role } = user;
-  const payload = { _id, username, email, role };
+  const payload = { _id, username, email, role }; 
   switch(type) {
     case "SESSION":
       return jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: '1h' });
@@ -13,26 +13,26 @@ function generateToken(user, type) {
   }
 }
 
-//function to authenticate JWT
+// Fonction d'authentification de token
 function authenticateToken(req, res, next) {
   const authHeader = req.headers.authorization;
   if(authHeader) {
     const token = authHeader.split(" ")[1];
     jwt.verify(token, process.env.SECRET_KEY, (err, payload) => {
       if(err) {
-        //403 c'est quand on a un token mais qu'il n'est pas bon
+        // Token incorrect = 403
         return res.status(403).json("Your token is incorrect");
       }
       req.user = payload;
       next();
     })
   } else {
-    //401 c'est quand on n'a pas le token
+    // Pas de token = 401
     res.status(401).json("You don't have any token");
   }
 }
 
-//a voir si ça marche bien
+// Fonction de rafraîchissement de token (à tester)
 function refreshToken(req, res, next) {
   const token = req.cookies.token;
 
@@ -45,7 +45,7 @@ function refreshToken(req, res, next) {
       return res.sendStatus(401);
     }
 
-    // Vérifiez si le token expire bientôt
+    // Vérifie si le token expire dans moins de 15 minutes
     const now = Date.now() / 1000; // Convertit la date en secondes
     const { exp } = decoded;
 
@@ -77,6 +77,7 @@ function setTokenCookie(res, token) {
   });
 }
 
+// Fonction de suppression de cookie
 function clearTokenCookie(req, res) {
   try {
     res.clearCookie('token');

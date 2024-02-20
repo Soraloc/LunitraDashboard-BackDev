@@ -1,5 +1,4 @@
 const express = require('express');
-//const Model = require('../model/users.model');
 const UserController = require('../controller/users.controller');
 
 const router = express.Router();
@@ -8,6 +7,7 @@ const router = express.Router();
 router.get('/getAll', UserController.getAllUsers);
 
 // Get user by id
+router.get('/getById/:id', UserController.getUserById);
 
 // Update user
 

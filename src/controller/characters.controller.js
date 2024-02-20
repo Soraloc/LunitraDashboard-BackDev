@@ -47,8 +47,24 @@ async function getCharacterByUser(req, res) {
   }
 }
 
+// Get character by id
+async function getCharacterById(req, res) {
+  try {
+    const character = await CharacterModel.getCharacterById(req.params.id);
+    res.status(200).json({
+      success: true,
+      message: 'Character n°' + req.params.id,
+      character: character
+    });
+  }
+  catch(error) {
+    res.status(500).json({ message: error.message })
+  }
+}
+
 module.exports = {
   createCharacter,
   getAllCharacters,
-  getCharacterByUser
+  getCharacterByUser,
+  getCharacterById
 }

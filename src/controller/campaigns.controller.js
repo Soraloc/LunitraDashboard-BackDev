@@ -1,5 +1,6 @@
 const CampaignModel = require('../model/campaigns.model');
 
+// Create a new campaign
 async function createCampaign(req, res) {
   try {
     console.log(req.body);
@@ -14,6 +15,7 @@ async function createCampaign(req, res) {
   }
 }
 
+// Get all campaigns from the database
 async function getAllCampaigns(req, res) {
   try {
     const campaigns = await CampaignModel.getAllCampaigns();
@@ -28,7 +30,39 @@ async function getAllCampaigns(req, res) {
   }
 }
 
+// Get a single campaign by its ID
+async function getCampaignById(req, res) {
+  try {
+    const campaign = await CampaignModel.getCampaignById(req.params.id);
+    res.status(200).json({
+      status: true,
+      message: "Campaign n°" + req.params.id,
+      campaign: campaign
+    });
+  }
+  catch(error) {
+    res.status(500).json({ message: error.message })
+  }
+}
+
+// Get all campaigns by user
+async function getCampaignByUser(req, res) {
+  try {
+    const campaigns = await CampaignModel.getCampaignByUser(req.params.id);
+    res.status(200).json({
+      status: true,
+      message: "All campaigns",
+      campaigns: campaigns
+    });
+  }
+  catch(error) {
+    res.status(500).json({ message: error.message })
+  }
+}
+
 module.exports = {
   createCampaign,
-  getAllCampaigns
+  getAllCampaigns,
+  getCampaignById,
+  getCampaignByUser
 }

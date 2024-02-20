@@ -51,7 +51,23 @@ async function getAllCampaigns() {
   return campaignsObject;
 }
 
+// Get single campaign by its ID
+async function getCampaignById(id) {
+  const campaigns = await Campaign.findById(id);
+  const campaignObject = campaigns.map((campaign) => new CampaignObject(campaign._id, campaign.name, campaign.creator, campaign.game_master, campaign.created_at, campaign.image));
+  return campaignObject;
+}
+
+// Get all campaigns by user ID
+async function getCampaignByUser(id) {
+  const campaigns = await Campaign.find({creator: id});
+  const campaignObject = campaigns.map((campaign) => new CampaignObject(campaign._id, campaign.name, campaign.creator, campaign.game_master, campaign.created_at, campaign.image));
+  return campaignObject;
+}
+
 module.exports = {
   createCampaign,
-  getAllCampaigns
+  getAllCampaigns,
+  getCampaignById,
+  getCampaignByUser
 }
