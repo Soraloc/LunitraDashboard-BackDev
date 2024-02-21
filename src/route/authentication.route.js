@@ -12,4 +12,10 @@ router.post('/register', AuthenticationController.registerUser);
 // Verify
 router.post('/verify', AuthenticationController.verifyUser);
 
+// Reset password
+//router.post('/resetPassword', AuthenticationController.resetPassword);
+
+// Change password
+router.post('/changePassword', AuthenticationController.changePassword);
+
 module.exports = router;

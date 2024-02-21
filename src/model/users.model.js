@@ -39,15 +39,15 @@ const dataSchema = new mongoose.Schema({
     },
     campaigns: [{
         required: false,
-        type: mongoose.Schema.Types.ObjectId, 
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'Campaigns'
     }],
     characters: [{
         required: false,
-        type: mongoose.Schema.Types.ObjectId, 
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'Characters'
     }],
-},{ versionKey: false })
+}, { versionKey: false })
 
 const User = mongoose.model('Users', dataSchema);
 
@@ -64,20 +64,28 @@ async function createUser(req) {
 
 // Get all users
 async function getAllUsers() {
-	const users = await User.find();
-	const usersObject = users.map((user) => new UserObject(user));
-	return usersObject;
+    const users = await User.find();
+    const usersObject = users.map((user) => new UserObject(user));
+    return usersObject;
 }
 
 // Get user by email
 async function getUserByEmail(email) {
-	const user = await User.find({ email: email });
-	if(!user) {
-		return null;
-	} else {
-		const userObject = new UserObject(user);
-		return userObject;
-	}
+    const user = await User.find({ email: email });
+    if (!user) {
+        return null;
+    } else {
+        const userObject = new UserObject(user);
+        return userObject;
+    }
+}
+
+// Update user password
+async function updatePasswordUser(id, password) {
+    const user = await User.findById(id);
+    user.password = password;
+    const savedUser = await user.save();
+    return savedUser;
 }
 
 async function getUserByVerifyToken(verifyToken) {
@@ -114,5 +122,6 @@ module.exports = {
 	getUserByEmail,
 	getUserByVerifyToken,
 	deleteVerifyToken,
-    getUserById
+    getUserById,
+    updatePasswordUser
 };

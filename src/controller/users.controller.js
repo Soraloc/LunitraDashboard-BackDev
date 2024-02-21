@@ -48,5 +48,6 @@ async function getUserById(req, res) {
 module.exports = {
   getAllUsers,
   getUserByEmail,
-  getUserById
+  getUserById,
+  getAllUsers
 }
