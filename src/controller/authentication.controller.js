@@ -3,6 +3,12 @@ const Token = require('../utils/token');
 const bcrypt = require("bcrypt");
 const transporter = require('../../config/transporterconfig');
 
+require('dotenv').config();
+
+const REGEX_EMAIL = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
+const REGEX_PWD = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/g;
+const SALT_ROUND = 10;
+
 async function loginUser (req, res) {
   try {
     // Récupération des données saisies par l'utilisateur
@@ -48,17 +54,15 @@ async function loginUser (req, res) {
       }
     }
   }
-  catch(error) {
+  catch (error) {
     res.status(500).json({ message: error.message })
   }
 }
 
 // Inscription de l'utilisateur
-async function registerUser (req, res) {
+async function registerUser(req, res) {
   try {
     const userAttributes = req.body;
-    const regexEmail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
-    const regexPwd = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/g;
     // Nouvelle variable, stockant les données de l'utilisateur liées à l'email pour vérifier si l'email existe déjà
     const userDatabase = await UserModel.getUserByEmail(userAttributes.email);
 
@@ -70,7 +74,7 @@ async function registerUser (req, res) {
       });
     }
     // Vérification de l'email avec la regex
-    else if (userAttributes.email.match(regexEmail) == null) {
+    else if (userAttributes.email.match(REGEX_EMAIL) == null) {
       res.status(400).json({
         success: false,
         message: 'Email is not valid'
@@ -84,7 +88,7 @@ async function registerUser (req, res) {
       });
     }
     // Vérification du mot de passe avec la regex
-    else if (userAttributes.password.match(regexPwd) == null) {
+    else if (userAttributes.password.match(REGEX_PWD) == null) {
       res.status(400).json({
         success: false,
         message: 'Password is not valid. Please verify that the password contains at least 8 characters with:\n- 1 lowercase character [a-z]\n- 1 uppercase character [A-Z]\n- 1 number [0-9]\n- 1 special character [@$!%*?&]'
@@ -92,8 +96,7 @@ async function registerUser (req, res) {
     }
     else {
       // Hachage du mot de passe avec bcrypt
-      const salt = 10;
-      userAttributes.password = await bcrypt.hash(userAttributes.password, salt);
+      userAttributes.password = await bcrypt.hash(userAttributes.password, SALT_ROUND);
       user = await UserModel.createUser(userAttributes);
 
       await verificationMail(user);
@@ -105,7 +108,7 @@ async function registerUser (req, res) {
       });
     }
   }
-  catch(error) {
+  catch (error) {
     res.status(500).json({ message: error.message })
   }
 }
@@ -148,8 +151,45 @@ async function verificationMail (user) {
   await transporter.sendMail(mailOptions);
 }
 
+async function changePassword(req, res) {
+  try {
+    let { email, password, newPassword } = req.body;
+    const user = await UserModel.getUserByEmail(email);
+    
+
+    if(!bcrypt.compareSync(password, user.id.password)) {
+      res.status(400).json({
+        success: false,
+        message: 'Password is not valid'
+      });
+      return;
+    }
+
+    // Vérification du mot de passe avec la regex
+    if (newPassword.match(REGEX_PWD) == null) {
+      res.status(400).json({
+        success: false,
+        message: 'Password is not valid. Please verify that the password contains at least 8 characters with:\n- 1 lowercase character [a-z]\n- 1 uppercase character [A-Z]\n- 1 number [0-9]\n- 1 special character [@$!%*?&]'
+      });
+      return;
+
+    } else {
+      newPassword = await bcrypt.hash(newPassword, SALT_ROUND);
+      await UserModel.updatePasswordUser(user.id._id, newPassword);
+      res.status(200).json({
+        success: true,
+        message: 'Password modified'
+      });
+    }
+  }
+  catch (error) {
+    res.status(500).json({ message: error.message })
+  }
+}
+
 module.exports = {
   loginUser,
   registerUser,
-  verifyUser
+  verifyUser,
+  changePassword
 }
