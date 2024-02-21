@@ -108,11 +108,23 @@ async function getUserById(id) {
     }
 }
 
+// Get password by email
+async function getPasswordByEmail(email) {
+	const user = await User.find({ email: email });
+	if(!user) {
+		return null;
+	} else {
+		const password = user[0].password;
+		return password;
+	}
+}
+
 module.exports = {
   createUser,
 	getAllUsers,
 	getUserByEmail,
 	getUserByVerifyToken,
 	deleteVerifyToken,
-    getUserById
+    getUserById,
+    getPasswordByEmail
 };

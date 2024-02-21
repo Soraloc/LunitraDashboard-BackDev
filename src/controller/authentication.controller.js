@@ -5,28 +5,46 @@ const transporter = require('../../config/transporterconfig');
 
 async function loginUser (req, res) {
   try {
+    // Récupération des données saisies par l'utilisateur
+    let result = false;
     const { email, password } = req.body;
     // Crypter et décrypter le password pour le comparer à la base
-    const user = await UserModel.getUserForLogin(email, password);
-    if (!user) {
+    const db_password = await UserModel.getPasswordByEmail(email);
+    if(!db_password) {
       res.status(400).json({
         success: false,
-        message: 'Login failed',
+        message: 'Password not found',
       });
     } else {
-      delete user.password;
-    
-      const token = Token.generateToken(user);
-    
-      // L'envoie de token dans les cookies ne fonctionne pas
-      Token.setTokenCookie(res, token);
+      result = bcrypt.compare(db_password, password);
+      if(!result) {
+        res.status(400).json({
+          success: false,
+          message: 'Password incorrect',
+        });
+      } else {
+        const user = await UserModel.getUserByEmail(email);
+        if(!user) {
+          res.status(400).json({
+            success: false,
+            message: 'Login failed',
+          });
+        } else {
+          delete user.password;
+        
+          const token = Token.generateToken(user);
+        
+          // L'envoie de token dans les cookies ne fonctionne pas
+          Token.setTokenCookie(res, token);
 
-      res.status(200).json({
-        success: true,
-        message: 'Login successful',
-        user,
-        token,
-      });
+          res.status(200).json({
+            success: true,
+            message: 'Login successful',
+            user,
+            token,
+          });
+        }
+      }
     }
   }
   catch(error) {
