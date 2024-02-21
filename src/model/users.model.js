@@ -90,7 +90,7 @@ async function getUserByVerifyToken(verifyToken) {
 }
 
 async function deleteVerifyToken(verifyToken) {
-    const user = await getUserByVerifyToken(verifyToken);
+  const user = await getUserByVerifyToken(verifyToken);
 	user.verifyToken = null;
 	user.verified = true;
 	const savedUser = await user.save();
@@ -99,13 +99,13 @@ async function deleteVerifyToken(verifyToken) {
 }
 
 async function getUserById(id) {
-    const user = await User.findById(id);
-    if(!user) {
-      return null;
-    } else {
-      const userObject = new UserObject(user);
-      return userObject;
-    }
+  const user = await User.findById(id);
+  if(!user) {
+    return null;
+  } else {
+    const userObject = new UserObject(user);
+    return userObject;
+  }
 }
 
 // Get password by email

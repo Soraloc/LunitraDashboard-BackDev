@@ -3,8 +3,6 @@ const Token = require('../utils/token');
 const bcrypt = require("bcrypt");
 const transporter = require('../../config/transporterconfig');
 
-require('dotenv').config();
-
 async function loginUser (req, res) {
   try {
     // Récupération des données saisies par l'utilisateur
@@ -61,6 +59,8 @@ async function registerUser (req, res) {
     const userAttributes = req.body;
     const regexEmail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
     const regexPwd = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/g;
+    // Nouvelle variable, stockant les données de l'utilisateur liées à l'email pour vérifier si l'email existe déjà
+    const userDatabase = await UserModel.getUserByEmail(userAttributes.email);
 
     // Vérification des champs vides
     if (!userAttributes.username || !userAttributes.email || !userAttributes.password) {
@@ -76,6 +76,13 @@ async function registerUser (req, res) {
         message: 'Email is not valid'
       });
     }
+    // Vérification de l'existence de l'email
+    else if (userDatabase) {
+      res.status(400).json({
+        success: false,
+        message: 'Email already exists'
+      });
+    }
     // Vérification du mot de passe avec la regex
     else if (userAttributes.password.match(regexPwd) == null) {
       res.status(400).json({
@@ -83,29 +90,20 @@ async function registerUser (req, res) {
         message: 'Password is not valid. Please verify that the password contains at least 8 characters with:\n- 1 lowercase character [a-z]\n- 1 uppercase character [A-Z]\n- 1 number [0-9]\n- 1 special character [@$!%*?&]'
       });
     }
+    else {
+      // Hachage du mot de passe avec bcrypt
+      const salt = 10;
+      userAttributes.password = await bcrypt.hash(userAttributes.password, salt);
+      user = await UserModel.createUser(userAttributes);
 
-    /* const userDatabase = await UserModel.getUserByEmail(usersAttributes.email);
-    console.log(userDatabase);
-    const emailExist = userDatabase.getEmail();
-    if(emailExist) {
-      res.status(400).json({
-        success: false,
-        message: 'Email already exists'
+      await verificationMail(user);
+
+      res.status(200).json({
+        success: true,
+        message: 'User created',
+        user: user
       });
-    } */
-
-    // Hachage du mot de passe avec bcrypt
-    const saltRounds = 10;
-    userAttributes.password = await bcrypt.hash(userAttributes.password, saltRounds);
-    user = await UserModel.createUser(userAttributes);
-
-    await verificationMail(user);
-
-    res.status(200).json({
-      success: true,
-      message: 'User created',
-      user: user
-    });
+    }
   }
   catch(error) {
     res.status(500).json({ message: error.message })
@@ -139,13 +137,13 @@ async function verifyUser (req, res) {
   }
 }
 
-// Vérification de l'utilisateur
+// Envoi du mail de vérification
 async function verificationMail (user) {
   const mailOptions = {
     from: '"Nicolas PREAUX" <nicolas.preaux83@gmail.com>',
-    to: user.id.email,
+    to: user.email,
     subject: "Blip",
-    text: "http://localhost:3000/auth/verify/" + user.id.verifyToken,
+    text: "http://localhost:3000/auth/verify/" + user.verifyToken,
   };
   await transporter.sendMail(mailOptions);
 }

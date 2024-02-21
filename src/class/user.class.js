@@ -1,16 +1,16 @@
 class User {
 
-  constructor(id, username, email, password, role, creationDate, verified, verifyToken, campaigns, characters) {
-    this.id = id;
-		this.username = username;
-  	this.email = email;
-  	this.password = password;
-	  this.role = role;
-    this.creationDate = creationDate;
-	  this.verified = verified;
-	  this.verifyToken = verifyToken;
-  	this.campaigns = campaigns;
-  	this.characters = characters;
+  constructor(user) {
+		this.id = user._id;
+		this.username = user.username;
+  	this.email = user.email;
+  	this.password = user.password;
+	  this.role = user.role;
+    this.creationDate = user.creationDate;
+	  this.verified = user.verified;
+	  this.verifyToken = user.verifyToken;
+  	this.campaigns = user.campaigns;
+  	this.characters = user.characters;
   }
 
 	getId() {
