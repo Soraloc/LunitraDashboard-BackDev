@@ -13,5 +13,6 @@ router.get('/getAll', CharacterController.getAllCharacters);
 router.get('/getByUser/:id', CharacterController.getCharacterByUser);
 
 // Get character by id
+router.get('/getById/:id', CharacterController.getCharacterById);
 
 module.exports = router;

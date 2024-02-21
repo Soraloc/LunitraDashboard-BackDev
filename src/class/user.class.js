@@ -1,15 +1,16 @@
 class User {
+  verifyToken = "";
   campaigns = [];
   characters = [];
 
-  constructor(id, username, email, password, role, verified, creationDate) {
-    this.id = id;
-    this.username = username;
-    this.email = email;
-    this.password = password;
-		this.role = role;
-		this.verified = verified;
-		this.creationDate = creationDate;
+  constructor(id, username, email, password, role, creationDate, verified) {
+  	this.id = id;
+  	this.username = username;
+  	this.email = email;
+  	this.password = password;
+	  this.role = role;
+    this.creationDate = creationDate;
+	  this.verified = verified;
   }
 
 	getId() {
@@ -28,13 +29,17 @@ class User {
 		return this.password;
 	}
 
+  getCreationDate() {
+		return this.creationDate;
+	}
+
 	getVerified() {
 		return this.verified;
 	}
 
-	getCreationDate() {
-		return this.creationDate;
-	}
+  getVerifyToken() {
+    return this.verifyToken;
+  }
 
 	addCampaign(campaign) {
 		this.campaigns.push(campaign);

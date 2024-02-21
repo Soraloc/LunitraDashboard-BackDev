@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const UserObject = require('../class/user.class');
-const bcrypt = require("bcrypt");
+const Token = require('../utils/token');
 
 const dataSchema = new mongoose.Schema({
     username: {
@@ -22,15 +22,20 @@ const dataSchema = new mongoose.Schema({
         type: String,
         default: "Member"
     },
+    creationDate: {
+        required: true,
+        type: Date,
+        default: Date.now
+    },
     verified: {
         required: true,
         type: Boolean,
         default: false
     },
-    creationDate: {
-        required: true,
-        type: Date,
-        default: Date.now
+    verifyToken: {
+        required: false,
+				unique: true,
+        type: String
     },
     campaigns: [{
         required: false,
@@ -49,6 +54,9 @@ const User = mongoose.model('Users', dataSchema);
 // Create a new user when sign in
 async function createUser(req) {
   const user = new User(req);
+  const tokenType = "VERIFY";
+  const verifyToken = Token.generateToken(user, tokenType)
+  user.verifyToken = verifyToken;
   const savedUser = await user.save();
   const userObject = new UserObject(savedUser);
   return userObject;
@@ -61,7 +69,7 @@ async function getAllUsers() {
 	return usersObject;
 }
 
-// Get email by email
+// Get user by email
 async function getUserByEmail(email) {
 	const user = await User.find({ email: email });
 	if(!user) {
@@ -72,27 +80,26 @@ async function getUserByEmail(email) {
 	}
 }
 
-// Get user by email and password
-async function getUserForLogin(email, password) {
-    let result = false;
-    const db_password = await User.findOne({ email: email }, 'password').exec();
-    result = await bcrypt.compare(password, db_password.password);
-    if(!result) {
-        return null;
-    } else {
-	    const user = await User.find({ email: email, password: db_password.password});
-        if(!user) {
-            return null;
-        } else {
-            const userObject = new UserObject(user);
-            return userObject;
-        }
-    }
+async function getUserByVerifyToken(verifyToken) {
+	const user = await User.find({ verifyToken: verifyToken });
+	if(!user) {
+		return null;
+	} else {
+		const userObject = new UserObject(user);
+		return userObject;
+	}
 }
 
-// Get user by id
+async function deleteVerifyToken(user) {
+	user.verifyToken = null;
+	user.verified = true;
+	const savedUser = await user.save();
+	const userObject = new UserObject(savedUser);
+	return userObject;
+}
+
 async function getUserById(id) {
-    const user = await User.find({ _id: id });
+    const user = await User.findById(id);
     if(!user) {
         return null;
     } else {
@@ -105,6 +112,7 @@ module.exports = {
   createUser,
 	getAllUsers,
 	getUserByEmail,
-    getUserById,
-    getUserForLogin
+	getUserByVerifyToken,
+	deleteVerifyToken,
+    getUserById
 };
