@@ -3,50 +3,50 @@ const UserObject = require('../class/user.class');
 const Token = require('../utils/token');
 
 const dataSchema = new mongoose.Schema({
-    username: {
-        required: true,
-        unique: true,
-        type: String
-    },
-    email: {
-        required: true,
-        unique: true,
-        type: String
-    },
-    password: {
-        required: true,
-        type: String
-    },
-    role: {
-        required: true,
-        type: String,
-        default: "Member"
-    },
-    creationDate: {
-        required: true,
-        type: Date,
-        default: Date.now
-    },
-    verified: {
-        required: true,
-        type: Boolean,
-        default: false
-    },
-    verifyToken: {
-        required: false,
-				unique: true,
-        type: String
-    },
-    campaigns: [{
-        required: false,
-        type: mongoose.Schema.Types.ObjectId, 
-        ref: 'Campaigns'
-    }],
-    characters: [{
-        required: false,
-        type: mongoose.Schema.Types.ObjectId, 
-        ref: 'Characters'
-    }],
+  username: {
+    required: true,
+    unique: true,
+    type: String
+  },
+  email: {
+    required: true,
+    unique: true,
+    type: String
+  },
+  password: {
+    required: true,
+    type: String
+  },
+  role: {
+    required: true,
+    type: String,
+    default: "Member"
+  },
+  creationDate: {
+    required: true,
+    type: Date,
+    default: Date.now
+  },
+  verified: {
+    required: true,
+    type: Boolean,
+    default: false
+  },
+  verifyToken: {
+    required: false,
+		unique: true,
+    type: String
+  },
+  campaigns: [{
+    required: false,
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'Campaigns'
+  }],
+  characters: [{
+    required: false,
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'Characters'
+  }],
 },{ versionKey: false })
 
 const User = mongoose.model('Users', dataSchema);
@@ -101,11 +101,22 @@ async function deleteVerifyToken(verifyToken) {
 async function getUserById(id) {
     const user = await User.findById(id);
     if(!user) {
-        return null;
+      return null;
     } else {
-        const userObject = new UserObject(user);
-        return userObject;
+      const userObject = new UserObject(user);
+      return userObject;
     }
+}
+
+// Get password by email
+async function getPasswordByEmail(email) {
+	const user = await User.find({ email: email });
+	if(!user) {
+		return null;
+	} else {
+		const password = user[0].password;
+		return password;
+	}
 }
 
 module.exports = {
@@ -114,5 +125,6 @@ module.exports = {
 	getUserByEmail,
 	getUserByVerifyToken,
 	deleteVerifyToken,
-    getUserById
+  getUserById,
+  getPasswordByEmail
 };
