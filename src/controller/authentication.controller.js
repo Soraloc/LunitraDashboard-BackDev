@@ -2,35 +2,55 @@ const UserModel = require('../model/users.model');
 const Token = require('../utils/token');
 const bcrypt = require("bcrypt");
 const transporter = require('../../config/transporterconfig');
+require('dotenv').config();
 
-const regexEmail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
-const regexPwd = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/g;
-const saltRounds = 10;
+const REGEX_EMAIL = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
+const REGEX_PWD = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/g;
+const SALT_ROUND = 10;
 
 async function loginUser (req, res) {
   try {
+    // Récupération des données saisies par l'utilisateur
+    let result = false;
     const { email, password } = req.body;
     // Crypter et décrypter le password pour le comparer à la base
-    const user = await UserModel.getUserForLogin(email, password);
-    if (!user) {
+    const db_password = await UserModel.getPasswordByEmail(email);
+    if(!db_password) {
       res.status(400).json({
         success: false,
-        message: 'Login failed',
+        message: 'Password not found',
       });
     } else {
-      delete user.password;
-    
-      const token = Token.generateToken(user);
-    
-      // L'envoie de token dans les cookies ne fonctionne pas
-      Token.setTokenCookie(res, token);
+      result = bcrypt.compare(db_password, password);
+      if(!result) {
+        res.status(400).json({
+          success: false,
+          message: 'Password incorrect',
+        });
+      } else {
+        const user = await UserModel.getUserByEmail(email);
+        if(!user) {
+          res.status(400).json({
+            success: false,
+            message: 'Login failed',
+          });
+        } else {
+          user.id[0].set({ password: undefined });
+          //delete user.password;
+        
+          const token = Token.generateToken(user);
+        
+          // L'envoie de token dans les cookies ne fonctionne pas
+          Token.setTokenCookie(res, token);
 
-      res.status(200).json({
-        success: true,
-        message: 'Login successful',
-        user,
-        token,
-      });
+          res.status(200).json({
+            success: true,
+            message: 'Login successful',
+            user,
+            token,
+          });
+        }
+      }
     }
   }
   catch (error) {
@@ -44,21 +64,21 @@ async function registerUser(req, res) {
     const usersAttributes = req.body;
 
     // Vérification des champs vides
-    if (!usersAttributes.username || !usersAttributes.email || !usersAttributes.password) {
+    if (!userAttributes.username || !userAttributes.email || !userAttributes.password) {
       res.status(400).json({
         success: false,
         message: 'Missing parameters'
       });
     }
     // Vérification de l'email avec la regex
-    else if (usersAttributes.email.match(regexEmail) == null) {
+    else if (userAttributes.email.match(REGEX_EMAIL) == null) {
       res.status(400).json({
         success: false,
         message: 'Email is not valid'
       });
     }
     // Vérification du mot de passe avec la regex
-    else if (usersAttributes.password.match(regexPwd) == null) {
+    else if (userAttributes.password.match(REGEX_PWD) == null) {
       res.status(400).json({
         success: false,
         message: 'Password is not valid. Please verify that the password contains at least 8 characters with:\n- 1 lowercase character [a-z]\n- 1 uppercase character [A-Z]\n- 1 number [0-9]\n- 1 special character [@$!%*?&]'
@@ -75,17 +95,17 @@ async function registerUser(req, res) {
       });
     } */
 
-    // Hachage du mot de passe (bloup bloup)
-    usersAttributes.password = await bcrypt.hash(usersAttributes.password, saltRounds);
-    user = await UserModel.createUser(usersAttributes);
+    // Hachage du mot de passe avec bcrypt
+    userAttributes.password = await bcrypt.hash(userAttributes.password, SALT_ROUND);
+    user = await UserModel.createUser(userAttributes);
+
+    await verificationMail(user);
 
     res.status(200).json({
       success: true,
       message: 'User created',
       user: user
     });
-
-    await verificationMail(user);
   }
   catch (error) {
     res.status(500).json({ message: error.message })
@@ -94,7 +114,7 @@ async function registerUser(req, res) {
 
 // Vérification de l'utilisateur
 async function verifyUser (req, res) {
-  const verifyToken = req.query.token; 
+  const verifyToken = req.params.token;
   if (!verifyToken) {
     res.status(400).json({
       success: false,
@@ -102,7 +122,7 @@ async function verifyUser (req, res) {
     });
   }
   else {
-    user = await UserModel.getUserByVerifyToken(verifyToken);
+    const user = await UserModel.deleteVerifyToken(verifyToken);;
     if (!user) {
       res.status(400).json({
         success: false,
@@ -110,7 +130,6 @@ async function verifyUser (req, res) {
       });
     }
     else {
-      user = await UserModel.deleteVerifyToken(user);
       res.status(200).json({
         success: true,
         message: 'User verified',
@@ -124,9 +143,9 @@ async function verifyUser (req, res) {
 async function verificationMail (user) {
   const mailOptions = {
     from: '"Nicolas PREAUX" <nicolas.preaux83@gmail.com>',
-    to: "garambois.lucas@gmail.com",
+    to: user.id.email,
     subject: "Blip",
-    text: "http://localhost:3000/auth/verify?token=" + user.verifyToken,
+    text: "http://localhost:3000/auth/verify/" + user.id.verifyToken,
   };
   await transporter.sendMail(mailOptions);
 }
@@ -137,7 +156,7 @@ async function changePassword(req, res) {
     const user = await UserModel.getUserByEmail(email);
     
 
-    if(!bcrypt.compareSync(password, user.id[0].password)) {
+    if(!bcrypt.compareSync(password, user.id.password)) {
       res.status(400).json({
         success: false,
         message: 'Password is not valid'
@@ -146,7 +165,7 @@ async function changePassword(req, res) {
     }
 
     // Vérification du mot de passe avec la regex
-    if (newPassword.match(regexPwd) == null) {
+    if (newPassword.match(REGEX_PWD) == null) {
       res.status(400).json({
         success: false,
         message: 'Password is not valid. Please verify that the password contains at least 8 characters with:\n- 1 lowercase character [a-z]\n- 1 uppercase character [A-Z]\n- 1 number [0-9]\n- 1 special character [@$!%*?&]'
@@ -154,8 +173,8 @@ async function changePassword(req, res) {
       return;
 
     } else {
-      newPassword = await bcrypt.hash(newPassword, saltRounds);
-      await UserModel.updatePasswordUser(user.id[0]._id, newPassword);
+      newPassword = await bcrypt.hash(newPassword, SALT_ROUND);
+      await UserModel.updatePasswordUser(user.id._id, newPassword);
       res.status(200).json({
         success: true,
         message: 'Password modified'

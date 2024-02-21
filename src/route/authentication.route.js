@@ -10,7 +10,7 @@ router.post('/login', AuthenticationController.loginUser);
 router.post('/register', AuthenticationController.registerUser);
 
 // Verify
-router.post('/verify', AuthenticationController.verifyUser);
+router.post('/verify/:token', AuthenticationController.verifyUser);
 
 // Reset password
 //router.post('/resetPassword', AuthenticationController.resetPassword);
