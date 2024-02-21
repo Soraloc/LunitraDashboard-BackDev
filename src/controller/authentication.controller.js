@@ -30,7 +30,8 @@ async function loginUser (req, res) {
             message: 'Login failed',
           });
         } else {
-          delete user.password;
+          user.id[0].set({ password: undefined });
+          //delete user.password;
         
           const token = Token.generateToken(user);
         
