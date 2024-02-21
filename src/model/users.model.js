@@ -71,7 +71,7 @@ async function getAllUsers() {
 
 // Get user by email
 async function getUserByEmail(email) {
-	const user = await User.find({ email: email });
+	const user = await User.findOne({ email: email });
 	if(!user) {
 		return null;
 	} else {
@@ -81,16 +81,16 @@ async function getUserByEmail(email) {
 }
 
 async function getUserByVerifyToken(verifyToken) {
-	const user = await User.find({ verifyToken: verifyToken });
+	const user = await User.findOne({ verifyToken: verifyToken });
 	if(!user) {
 		return null;
 	} else {
-		const userObject = new UserObject(user);
-		return userObject;
+		return user;
 	}
 }
 
-async function deleteVerifyToken(user) {
+async function deleteVerifyToken(verifyToken) {
+    const user = await getUserByVerifyToken(verifyToken);
 	user.verifyToken = null;
 	user.verified = true;
 	const savedUser = await user.save();
