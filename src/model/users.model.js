@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const UserObject = require('../class/user.class');
+const bcrypt = require("bcrypt");
 
 const dataSchema = new mongoose.Schema({
     username: {
@@ -71,8 +72,39 @@ async function getUserByEmail(email) {
 	}
 }
 
+// Get user by email and password
+async function getUserForLogin(email, password) {
+    let result = false;
+    const db_password = await User.findOne({ email: email }, 'password').exec();
+    result = await bcrypt.compare(password, db_password.password);
+    if(!result) {
+        return null;
+    } else {
+	    const user = await User.find({ email: email, password: db_password.password});
+        if(!user) {
+            return null;
+        } else {
+            const userObject = new UserObject(user);
+            return userObject;
+        }
+    }
+}
+
+// Get user by id
+async function getUserById(id) {
+    const user = await User.find({ _id: id });
+    if(!user) {
+        return null;
+    } else {
+        const userObject = new UserObject(user);
+        return userObject;
+    }
+}
+
 module.exports = {
   createUser,
 	getAllUsers,
-	getUserByEmail
+	getUserByEmail,
+    getUserById,
+    getUserForLogin
 };

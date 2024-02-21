@@ -65,6 +65,7 @@ function refreshToken(req, res, next) {
   });
 }
 
+//on store le token dans un cookie
 function setTokenCookie(res, token) {
   res.cookie('token', token, {
     httpOnly: true, // Empêcher l'accès au cookie depuis le code JavaScript côté client
@@ -74,6 +75,7 @@ function setTokenCookie(res, token) {
   });
 }
 
+//on clear le token dans le cookie
 function clearTokenCookie(req, res) {
   try {
     res.clearCookie('token');

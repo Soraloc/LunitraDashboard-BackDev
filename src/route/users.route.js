@@ -8,8 +8,10 @@ const router = express.Router();
 router.get('/getAll', UserController.getAllUsers);
 
 // Get user by id
+router.get('/getById/:id', UserController.getUserById);
 
 // Update user
+
 
 // Delete user
 
