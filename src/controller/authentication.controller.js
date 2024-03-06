@@ -36,7 +36,7 @@ async function loginUser (req, res) {
             message: 'Login failed'
           });
         } else {
-          user.id[0].set({ password: undefined });
+          delete user.password;
           const token = Token.generateToken(user, "SESSION");
           // L'envoie de token dans les cookies ne fonctionne pas
           Token.setTokenCookie(res, token);

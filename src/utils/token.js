@@ -49,7 +49,12 @@ function refreshToken(req, res, next) {
     const now = Date.now();
     const delay = 15 * 60 * 1000;
 
-    if((expiration - now) <= delay) {
+    //mais est-ce qu'on rentre dedans sachant qu'on vérifie le token avant ?
+    if(expiration <= now) {
+      console.log("token expiré");
+      req.tokenExpired = true;
+      next();
+    } else if((expiration - now) <= delay) {
       // Génère un nouveau token avec une nouvelle durée de validité
       const newToken = generateToken(decoded, "SESSION");
       console.log("nouveau : " + newToken);
@@ -59,10 +64,12 @@ function refreshToken(req, res, next) {
         httpOnly: true,
         maxAge: 3600000
       });
+      req.tokenExpired = false;
 
       next();
     } else {
       console.log("pas besoin de refresh");
+      req.tokenExpired = false;
       return next();
     }
   });
