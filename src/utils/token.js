@@ -32,7 +32,7 @@ function authenticateToken(req, res, next) {
   }
 }
 
-// Fonction de rafraîchissement de token (à tester)
+// Fonction de rafraîchissement de token
 function refreshToken(req, res, next) {
   const token = req.cookies.token;
 
@@ -45,26 +45,27 @@ function refreshToken(req, res, next) {
       return res.sendStatus(401);
     }
 
-    // Vérifie si le token expire dans moins de 15 minutes
-    const now = Date.now() / 1000; // Convertit la date en secondes
-    const { exp } = decoded;
+    const decodedToken = jwt.decode(token);
+    const expiration = decodedToken.exp * 1000;
+    const now = Date.now();
+    const delay = 15 * 60 * 1000;
 
-    if (exp - now > 60 * 15) { // Si le token expire dans plus de 15 minutes, on ne le rafraîchit pas encore
+    if((expiration - now) <= delay) {
+      // Génère un nouveau token avec une nouvelle durée de validité
+      const newToken = generateToken(decoded, "SESSION");
+      console.log("nouveau : " + newToken);
+
+      // Envoie le nouveau token au client dans un cookie sécurisé
+      res.cookie('token', newToken, {
+        httpOnly: true,
+        maxAge: 3600000
+      });
+
+      next();
+    } else {
+      console.log("pas besoin de refresh");
       return next();
     }
-
-    // Génère un nouveau token avec une nouvelle durée de validité
-    const newToken = generateToken(decoded);
-
-    // Envoie le nouveau token au client dans un cookie sécurisé
-    res.cookie('token', newToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'none',
-      maxAge: 24 * 60 * 60 * 1000 // Durée de validité du cookie (ici 24 heures)
-    });
-
-    next();
   });
 }
 

@@ -20,21 +20,18 @@ async function loginUser (req, res) {
       if(!result) {
         res.status(400).json({
           success: false,
-          message: 'Password incorrect',
+          message: 'Password incorrect'
         });
       } else {
         const user = await UserModel.getUserByEmail(email);
         if(!user) {
           res.status(400).json({
             success: false,
-            message: 'Login failed',
+            message: 'Login failed'
           });
         } else {
           user.id[0].set({ password: undefined });
-          //delete user.password;
-        
-          const token = Token.generateToken(user);
-        
+          const token = Token.generateToken(user, "SESSION");
           // L'envoie de token dans les cookies ne fonctionne pas
           Token.setTokenCookie(res, token);
 
@@ -42,7 +39,7 @@ async function loginUser (req, res) {
             success: true,
             message: 'Login successful',
             user,
-            token,
+            token
           });
         }
       }
@@ -144,13 +141,21 @@ async function verificationMail (user) {
     from: '"Nicolas PREAUX" <nicolas.preaux83@gmail.com>',
     to: "garambois.lucas@gmail.com",
     subject: "Blip",
-    text: "http://localhost:3000/auth/verify?token=" + user.verifyToken,
+    text: "http://localhost:3000/auth/verify?token=" + user.verifyToken
   };
   await transporter.sendMail(mailOptions);
+}
+
+async function refreshToken(req, res) {
+  res.status(200).json({
+    success: true,
+    message: 'Test youhou'
+  });
 }
 
 module.exports = {
   loginUser,
   registerUser,
-  verifyUser
+  verifyUser,
+  refreshToken
 }

@@ -5,8 +5,10 @@ const campaigns_route = require('./src/route/campaigns.route');
 const characters_route = require('./src/route/characters.route');
 const authentication_route = require('./src/route/authentication.route');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 
 const app = express();
+app.use(cookieParser());
 
 app.use(bodyParser.urlencoded({
   extended: true
