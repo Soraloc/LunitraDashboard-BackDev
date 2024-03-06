@@ -64,9 +64,9 @@ async function createUser(req) {
 
 // Get all users
 async function getAllUsers() {
-    const users = await User.find();
-    const usersObject = users.map((user) => new UserObject(user));
-    return usersObject;
+  const users = await User.find();
+  const usersObject = users.map((user) => new UserObject(user));
+  return usersObject;
 }
 
 // Get user by email
@@ -82,10 +82,10 @@ async function getUserByEmail(email) {
 
 // Update user password
 async function updatePasswordUser(id, password) {
-    const user = await User.findById(id);
-    user.password = password;
-    const savedUser = await user.save();
-    return savedUser;
+  const user = await User.findById(id);
+  user.password = password;
+  const savedUser = await user.save();
+  return savedUser;
 }
 
 async function getUserByVerifyToken(verifyToken) {
@@ -133,7 +133,7 @@ module.exports = {
 	getUserByEmail,
 	getUserByVerifyToken,
 	deleteVerifyToken,
-    getUserById,
-    updatePasswordUser,
-    getPasswordByEmail
+  getUserById,
+  updatePasswordUser,
+  getPasswordByEmail
 };
