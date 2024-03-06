@@ -44,7 +44,6 @@ function refreshToken(req, res, next) {
     if (err) {
       return res.sendStatus(401);
     }
-
     const decodedToken = jwt.decode(token);
     const expiration = decodedToken.exp * 1000;
     const now = Date.now();

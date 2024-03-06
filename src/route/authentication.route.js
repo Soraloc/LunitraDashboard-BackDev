@@ -20,6 +20,6 @@ router.post('/verify/:token', AuthenticationController.verifyUser);
 router.post('/changePassword', AuthenticationController.changePassword);
 
 // Refresh
-router.post('/refresh', Token.authenticateToken, Token.refreshToken, AuthenticationController.refreshToken);
+router.post('/refresh', Token.authenticateToken, Token.refreshToken, AuthenticationController.testRefreshToken);
 
 module.exports = router;

@@ -184,9 +184,17 @@ async function changePassword(req, res) {
   }
 }
 
+async function testRefreshToken(req, res) {
+  res.status(200).json({
+    success: true,
+    message: 'Youhou'
+  });
+}
+
 module.exports = {
   loginUser,
   registerUser,
   verifyUser,
-  changePassword
+  changePassword,
+  testRefreshToken
 }
