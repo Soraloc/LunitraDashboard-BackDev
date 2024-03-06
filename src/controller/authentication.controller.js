@@ -3,6 +3,12 @@ const Token = require('../utils/token');
 const bcrypt = require("bcrypt");
 const transporter = require('../../config/transporterconfig');
 
+require('dotenv').config();
+
+const REGEX_EMAIL = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
+const REGEX_PWD = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/g;
+const SALT_ROUND = 10;
+
 async function loginUser (req, res) {
   try {
     // Récupération des données saisies par l'utilisateur
@@ -45,71 +51,68 @@ async function loginUser (req, res) {
       }
     }
   }
-  catch(error) {
+  catch (error) {
     res.status(500).json({ message: error.message })
   }
 }
 
 // Inscription de l'utilisateur
-async function registerUser (req, res) {
+async function registerUser(req, res) {
   try {
-    const usersAttributes = req.body;
-    const regexEmail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
-    const regexPwd = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/g;
+    const userAttributes = req.body;
+    // Nouvelle variable, stockant les données de l'utilisateur liées à l'email pour vérifier si l'email existe déjà
+    const userDatabase = await UserModel.getUserByEmail(userAttributes.email);
 
     // Vérification des champs vides
-    if (!usersAttributes.username || !usersAttributes.email || !usersAttributes.password) {
+    if (!userAttributes.username || !userAttributes.email || !userAttributes.password) {
       res.status(400).json({
         success: false,
         message: 'Missing parameters'
       });
     }
     // Vérification de l'email avec la regex
-    else if (usersAttributes.email.match(regexEmail) == null) {
+    else if (userAttributes.email.match(REGEX_EMAIL) == null) {
       res.status(400).json({
         success: false,
         message: 'Email is not valid'
       });
     }
+    // Vérification de l'existence de l'email
+    else if (userDatabase) {
+      res.status(400).json({
+        success: false,
+        message: 'Email already exists'
+      });
+    }
     // Vérification du mot de passe avec la regex
-    else if (usersAttributes.password.match(regexPwd) == null) {
+    else if (userAttributes.password.match(REGEX_PWD) == null) {
       res.status(400).json({
         success: false,
         message: 'Password is not valid. Please verify that the password contains at least 8 characters with:\n- 1 lowercase character [a-z]\n- 1 uppercase character [A-Z]\n- 1 number [0-9]\n- 1 special character [@$!%*?&]'
       });
     }
+    else {
+      // Hachage du mot de passe avec bcrypt
+      userAttributes.password = await bcrypt.hash(userAttributes.password, SALT_ROUND);
+      user = await UserModel.createUser(userAttributes);
 
-    /* const userDatabase = await UserModel.getUserByEmail(usersAttributes.email);
-    console.log(userDatabase);
-    const emailExist = userDatabase.getEmail();
-    if(emailExist) {
-      res.status(400).json({
-        success: false,
-        message: 'Email already exists'
+      await verificationMail(user);
+
+      res.status(200).json({
+        success: true,
+        message: 'User created',
+        user: user
       });
-    } */
-
-    // Hachage du mot de passe avec bcrypt
-    const saltRounds = 10;
-    usersAttributes.password = await bcrypt.hash(usersAttributes.password, saltRounds);
-    user = await UserModel.createUser(usersAttributes);
-
-    res.status(200).json({
-      success: true,
-      message: 'User created',
-      user: user
-    });
-
-    await verificationMail(user);
+    }
   }
-  catch(error) {
+  catch (error) {
     res.status(500).json({ message: error.message })
   }
 }
 
 // Vérification de l'utilisateur
 async function verifyUser (req, res) {
-  const verifyToken = req.query.token; 
+  const verifyToken = req.params.token;
   if (!verifyToken) {
     res.status(400).json({
       success: false,
@@ -117,7 +120,7 @@ async function verifyUser (req, res) {
     });
   }
   else {
-    user = await UserModel.getUserByVerifyToken(verifyToken);
+    const user = await UserModel.deleteVerifyToken(verifyToken);;
     if (!user) {
       res.status(400).json({
         success: false,
@@ -125,7 +128,6 @@ async function verifyUser (req, res) {
       });
     }
     else {
-      user = await UserModel.deleteVerifyToken(user);
       res.status(200).json({
         success: true,
         message: 'User verified',
@@ -135,27 +137,56 @@ async function verifyUser (req, res) {
   }
 }
 
-// Vérification de l'utilisateur
+// Envoi du mail de vérification
 async function verificationMail (user) {
   const mailOptions = {
     from: '"Nicolas PREAUX" <nicolas.preaux83@gmail.com>',
-    to: "garambois.lucas@gmail.com",
+    to: user.email,
     subject: "Blip",
-    text: "http://localhost:3000/auth/verify?token=" + user.verifyToken
+    text: "http://localhost:3000/auth/verify/" + user.verifyToken,
   };
   await transporter.sendMail(mailOptions);
 }
 
-async function refreshToken(req, res) {
-  res.status(200).json({
-    success: true,
-    message: 'Test youhou'
-  });
+async function changePassword(req, res) {
+  try {
+    let { email, password, newPassword } = req.body;
+    const user = await UserModel.getUserByEmail(email);
+    
+
+    if(!bcrypt.compareSync(password, user.id.password)) {
+      res.status(400).json({
+        success: false,
+        message: 'Password is not valid'
+      });
+      return;
+    }
+
+    // Vérification du mot de passe avec la regex
+    if (newPassword.match(REGEX_PWD) == null) {
+      res.status(400).json({
+        success: false,
+        message: 'Password is not valid. Please verify that the password contains at least 8 characters with:\n- 1 lowercase character [a-z]\n- 1 uppercase character [A-Z]\n- 1 number [0-9]\n- 1 special character [@$!%*?&]'
+      });
+      return;
+
+    } else {
+      newPassword = await bcrypt.hash(newPassword, SALT_ROUND);
+      await UserModel.updatePasswordUser(user.id._id, newPassword);
+      res.status(200).json({
+        success: true,
+        message: 'Password modified'
+      });
+    }
+  }
+  catch (error) {
+    res.status(500).json({ message: error.message })
+  }
 }
 
 module.exports = {
   loginUser,
   registerUser,
   verifyUser,
-  refreshToken
+  changePassword
 }

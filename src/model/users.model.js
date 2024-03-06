@@ -64,33 +64,41 @@ async function createUser(req) {
 
 // Get all users
 async function getAllUsers() {
-	const users = await User.find();
-	const usersObject = users.map((user) => new UserObject(user));
-	return usersObject;
+    const users = await User.find();
+    const usersObject = users.map((user) => new UserObject(user));
+    return usersObject;
 }
 
 // Get user by email
 async function getUserByEmail(email) {
-	const user = await User.find({ email: email });
+	const user = await User.findOne({ email: email });
 	if(!user) {
 		return null;
 	} else {
 		const userObject = new UserObject(user);
 		return userObject;
 	}
+}
+
+// Update user password
+async function updatePasswordUser(id, password) {
+    const user = await User.findById(id);
+    user.password = password;
+    const savedUser = await user.save();
+    return savedUser;
 }
 
 async function getUserByVerifyToken(verifyToken) {
-	const user = await User.find({ verifyToken: verifyToken });
+	const user = await User.findOne({ verifyToken: verifyToken });
 	if(!user) {
 		return null;
 	} else {
-		const userObject = new UserObject(user);
-		return userObject;
+		return user;
 	}
 }
 
-async function deleteVerifyToken(user) {
+async function deleteVerifyToken(verifyToken) {
+  const user = await getUserByVerifyToken(verifyToken);
 	user.verifyToken = null;
 	user.verified = true;
 	const savedUser = await user.save();
@@ -99,13 +107,13 @@ async function deleteVerifyToken(user) {
 }
 
 async function getUserById(id) {
-    const user = await User.findById(id);
-    if(!user) {
-      return null;
-    } else {
-      const userObject = new UserObject(user);
-      return userObject;
-    }
+  const user = await User.findById(id);
+  if(!user) {
+    return null;
+  } else {
+    const userObject = new UserObject(user);
+    return userObject;
+  }
 }
 
 // Get password by email
@@ -125,6 +133,7 @@ module.exports = {
 	getUserByEmail,
 	getUserByVerifyToken,
 	deleteVerifyToken,
-  getUserById,
-  getPasswordByEmail
+    getUserById,
+    updatePasswordUser,
+    getPasswordByEmail
 };

@@ -11,7 +11,13 @@ router.post('/login', AuthenticationController.loginUser);
 router.post('/register', AuthenticationController.registerUser);
 
 // Verify
-router.post('/verify', AuthenticationController.verifyUser);
+router.post('/verify/:token', AuthenticationController.verifyUser);
+
+// Reset password
+//router.post('/resetPassword', AuthenticationController.resetPassword);
+
+// Change password
+router.post('/changePassword', AuthenticationController.changePassword);
 
 // Refresh
 router.post('/refresh', Token.authenticateToken, Token.refreshToken, AuthenticationController.refreshToken);
