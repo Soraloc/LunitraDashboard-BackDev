@@ -1,5 +1,6 @@
 const express = require('express');
 const AuthenticationController = require('../controller/authentication.controller');
+const Token = require('../utils/token');
 
 const router = express.Router();
 
@@ -17,5 +18,9 @@ router.post('/verify/:token', AuthenticationController.verifyUser);
 
 // Change password
 router.post('/changePassword', AuthenticationController.changePassword);
+
+// Refresh test
+// utiliser authenticateToken et refreshToken sur toutes les routes après la connexion
+router.post('/refresh', Token.authenticateToken, Token.refreshToken, AuthenticationController.testRefreshToken);
 
 module.exports = router;

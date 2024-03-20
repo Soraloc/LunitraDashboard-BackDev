@@ -7,7 +7,7 @@ async function createCharacter(req, res) {
   try {
     const character = await CharacterModel.createCharacter(req.body);
     console.log(character);
-    res.status(200).json({
+    res.status(201).json({ // 201 instead of 200, because it's a creation
       success: true,
       message: 'Character created',
       character: character
