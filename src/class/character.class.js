@@ -1,13 +1,16 @@
 class Character {
   campaigns = [];
 
-  constructor(id, first_name, last_name, age, gender, creator) {
-    this.id = id;
-    this.first_name = first_name;
-    this.last_name = last_name;
-    this.age = age;
-    this.gender = gender;
-    this.creator = creator;
+  constructor(character) {
+    this.id = character._id;
+    this.first_name = character.first_name;
+    this.last_name = character.last_name;
+    this.age = character.age;
+    this.gender = character.gender;
+    this.background = character.background;
+    this.image = character.image;
+    this.gallery = character.gallery;
+    this.creator = character.creator;
   }
 
   getId() {

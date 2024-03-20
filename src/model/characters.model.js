@@ -18,6 +18,18 @@ const dataSchema = new mongoose.Schema({
     required: false,
     type: String
   },
+  background: {
+    required: false,
+    type: String
+  },
+  image: {
+    required: false,
+    type: String
+  },
+  gallery: {
+    required: false,
+    type: [String]
+  },
   creator: {
     required: true,
     type: mongoose.Schema.Types.ObjectId, 
@@ -36,34 +48,34 @@ const Character = mongoose.model('Characters', dataSchema);
 async function createCharacter(req) {
   const character = new Character(req);
   const savedCharacter = await character.save();
-  const characterObject = new CharacterObject(savedCharacter._id, savedCharacter.first_name, savedCharacter.last_name, savedCharacter.age, savedCharacter.gender, savedCharacter.creator);
+  const characterObject = new CharacterObject(savedCharacter);
   return characterObject;
 }
 
 // Get all characters
 async function getAllCharacters() {
   const characters = await Character.find();
-  const charactersObject = characters.map((character) => new CharacterObject(character._id, character.first_name, character.last_name, character.age, character.gender, character.creator));
+  const charactersObject = characters.map((character) => new CharacterObject(character));
   return charactersObject;
 }
 
 // Get all characters by user
-async function getCharacterByUser(id) {
+async function getCharactersByUser(id) {
   const characters = await Character.find({creator: id});
-  const charactersObject = characters.map((character) => new CharacterObject(character._id, character.first_name, character.last_name, character.age, character.gender, character.creator));
+  const charactersObject = characters.map((character) => new CharacterObject(character));
   return charactersObject;
 }
 
 // Get character by id
 async function getCharacterById(id) {
-  const characters = await Character.findById(id);
-  const characterObject = characters.map((character) => new CharacterObject(character._id, character.first_name, character.last_name, character.age, character.gender, character.creator));
+  const character = await Character.findById(id);
+  const characterObject = new CharacterObject(character);
   return characterObject;
 }
 
 module.exports = {
   createCharacter,
   getAllCharacters,
-  getCharacterByUser,
+  getCharactersByUser,
   getCharacterById
 }
