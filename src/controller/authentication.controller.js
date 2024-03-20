@@ -6,7 +6,7 @@ const transporter = require('../../config/transporterconfig');
 require('dotenv').config();
 
 const REGEX_EMAIL = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
-const REGEX_PWD = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/g;
+const REGEX_PWD = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,30}$/g;
 const SALT_ROUND = 10;
 
 async function loginUser (req, res) {
@@ -88,7 +88,7 @@ async function registerUser(req, res) {
     else if (userAttributes.password.match(REGEX_PWD) == null) {
       res.status(400).json({
         success: false,
-        message: 'Password is not valid. Please verify that the password contains at least 8 characters with:\n- 1 lowercase character [a-z]\n- 1 uppercase character [A-Z]\n- 1 number [0-9]\n- 1 special character [@$!%*?&]'
+        message: 'Password is not valid. Please verify that the password contains between 8 and 30 characters with:\n- 1 lowercase character [a-z]\n- 1 uppercase character [A-Z]\n- 1 number [0-9]\n- 1 special character [@$!%*?&]'
       });
     }
     else {
