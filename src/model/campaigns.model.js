@@ -27,11 +27,12 @@ const dataSchema = new mongoose.Schema({
   },
   locations: [{
     required: false,
-    type: String
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Locations'
   }],
   characters: [{
     required: false,
-    type: [mongoose.Schema.Types.ObjectId], 
+    type: mongoose.Schema.Types.ObjectId, 
     ref: 'Characters'
   }],
 },{ versionKey: false })
@@ -53,21 +54,54 @@ async function getAllCampaigns() {
 
 // Get single campaign by its ID
 async function getCampaignById(id) {
-  const campaigns = await Campaign.findById(id);
-  const campaignObject = campaigns.map((campaign) => new CampaignObject(campaign._id, campaign.name, campaign.creator, campaign.game_master, campaign.created_at, campaign.image));
+  const campaign = await Campaign.findById(id);
+  const campaignObject = new CampaignObject(campaign._id, campaign.name, campaign.creator, campaign.game_master, campaign.created_at, campaign.image);
   return campaignObject;
 }
 
 // Get all campaigns by user ID
-async function getCampaignByUser(id) {
+async function getCampaignsByUser(id) {
   const campaigns = await Campaign.find({creator: id});
-  const campaignObject = campaigns.map((campaign) => new CampaignObject(campaign._id, campaign.name, campaign.creator, campaign.game_master, campaign.created_at, campaign.image));
-  return campaignObject;
+  const campaignsObject = campaigns.map((campaign) => new CampaignObject(campaign._id, campaign.name, campaign.creator, campaign.game_master, campaign.created_at, campaign.image));
+  return campaignsObject;
+}
+
+async function addLocationToCampaign(campaignId, locationId) {
+  try {
+    // Find the campaign by its ID
+    console.log("campaignId: " + campaignId + " locationId: " + locationId);
+    const campaign = await Campaign.findById(campaignId);
+    
+    if (!campaign) {
+      throw new Error('Campaign not found');
+    }
+
+    // Add the location ID to the locations array of the campaign
+    campaign.locations.push(locationId);
+
+    // Save the updated campaign to the database
+    const updatedCampaign = await campaign.save();
+
+    return updatedCampaign;
+  } catch (error) {
+    throw new Error('Error adding location to campaign: ' + error.message);
+  }
+}
+
+// Get all locations from a specific campaign
+async function getLocationsFromCampaign(id) {
+  const campaign = await Campaign.findById(id);
+  console.log("Campaign model after populate: " + JSON.stringify(campaign));
+  campaign.populate();
+  console.log("Campaign locations after populate: " + JSON.stringify(campaign.locations));
+  return campaign.locations;
 }
 
 module.exports = {
   createCampaign,
   getAllCampaigns,
   getCampaignById,
-  getCampaignByUser
+  getCampaignsByUser,
+  addLocationToCampaign,
+  getLocationsFromCampaign
 }

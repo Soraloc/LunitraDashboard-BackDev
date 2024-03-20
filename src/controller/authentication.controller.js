@@ -17,7 +17,7 @@ async function loginUser (req, res) {
     // Crypter et décrypter le password pour le comparer à la base
     const db_password = await UserModel.getPasswordByEmail(email);
     if(!db_password) {
-      res.status(400).json({
+      res.status(400).json({ // 400: Bad Request
         success: false,
         message: 'Password not found',
       });
@@ -152,14 +152,12 @@ async function changePassword(req, res) {
   try {
     let { email, password, newPassword } = req.body;
     const user = await UserModel.getUserByEmail(email);
-    
 
     if(!bcrypt.compareSync(password, user.id.password)) {
       res.status(400).json({
         success: false,
         message: 'Password is not valid'
       });
-      return;
     }
 
     // Vérification du mot de passe avec la regex
@@ -168,8 +166,6 @@ async function changePassword(req, res) {
         success: false,
         message: 'Password is not valid. Please verify that the password contains at least 8 characters with:\n- 1 lowercase character [a-z]\n- 1 uppercase character [A-Z]\n- 1 number [0-9]\n- 1 special character [@$!%*?&]'
       });
-      return;
-
     } else {
       newPassword = await bcrypt.hash(newPassword, SALT_ROUND);
       await UserModel.updatePasswordUser(user.id._id, newPassword);
