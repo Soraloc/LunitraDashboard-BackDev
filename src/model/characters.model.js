@@ -14,6 +14,11 @@ const dataSchema = new mongoose.Schema({
     required: true,
     type: Number
   },
+  creator: {
+    required: true,
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'Users'
+  },
   gender: {
     required: false,
     type: String
@@ -37,11 +42,6 @@ const dataSchema = new mongoose.Schema({
   gallery: {
     required: false,
     type: [String]
-  },
-  creator: {
-    required: true,
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: 'Users'
   },
   campaigns: [{
     required: false,

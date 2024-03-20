@@ -1,4 +1,5 @@
 const CharacterModel = require('../model/characters.model');
+const UserModel = require('../model/users.model');
 
 // Pour la création d'un personnage il faut récupérer l'id de l'utilisateur en ligne
 // donc celui qui le créer
@@ -6,6 +7,7 @@ const CharacterModel = require('../model/characters.model');
 async function createCharacter(req, res) {
   try {
     const character = await CharacterModel.createCharacter(req.body);
+    UserModel.addCharacterToUser(req.body.creator, character._id);
     console.log(character);
     res.status(201).json({ // 201 instead of 200, because it's a creation
       success: true,

@@ -111,8 +111,7 @@ async function getUserById(id) {
   if(!user) {
     return null;
   } else {
-    const userObject = new UserObject(user);
-    return userObject;
+    return user;
   }
 }
 
@@ -127,6 +126,12 @@ async function getPasswordByEmail(email) {
 	}
 }
 
+async function addCharacterToUser(userId, characterId) {
+  const user = await getUserById(userId);
+  user.characters.push(characterId);
+  await user.save();
+}
+
 module.exports = {
   createUser,
 	getAllUsers,
@@ -135,5 +140,6 @@ module.exports = {
 	deleteVerifyToken,
   getUserById,
   updatePasswordUser,
-  getPasswordByEmail
+  getPasswordByEmail,
+  addCharacterToUser
 };
