@@ -120,7 +120,7 @@ async function verifyUser (req, res) {
     });
   }
   else {
-    const user = await UserModel.deleteVerifyToken(verifyToken);;
+    const user = await UserModel.deleteVerifyToken(verifyToken);
     if (!user) {
       res.status(400).json({
         success: false,

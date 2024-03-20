@@ -7,6 +7,8 @@ class Character {
     this.last_name = character.last_name;
     this.age = character.age;
     this.gender = character.gender;
+    this.physical_description = character.physical_description;
+    this.mental_description = character.mental_description;
     this.background = character.background;
     this.image = character.image;
     this.gallery = character.gallery;
@@ -31,6 +33,26 @@ class Character {
 
   getGender() {
     return this.gender;
+  }
+
+  getPhysicalDescription() {
+    return this.physical_description;
+  }
+
+  getMentalDescription() {
+    return this.mental_description;
+  }
+
+  getBackground() {
+    return this.background;
+  }
+
+  getImage() {
+    return this.image;
+  }
+
+  getGallery() {
+    return this.gallery;
   }
 
   getCreator() {

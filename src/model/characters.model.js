@@ -18,6 +18,14 @@ const dataSchema = new mongoose.Schema({
     required: false,
     type: String
   },
+  physical_description: {
+    required: false,
+    type: String
+  },
+  mental_description: {
+    required: false,
+    type: String
+  },
   background: {
     required: false,
     type: String
